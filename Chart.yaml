@@ -1,0 +1,24 @@
+apiVersion: v2
+name: anychart
+description: A configurable Helm chart for application workloads and supporting Kubernetes resources.
+type: application
+version: 1.0.0
+kubeVersion: ">=1.25.0-0"
+home: https://github.com/arequs/anychart
+sources:
+  - https://github.com/arequs/anychart
+keywords:
+  - application
+  - deployment
+  - statefulset
+  - cronjob
+maintainers:
+  - name: arequs
+    url: https://github.com/arequs
+icon: https://helm.sh/img/helm.svg
+annotations:
+  artifacthub.io/links: |
+    - name: Source
+      url: https://github.com/arequs/anychart
+    - name: Artifact Hub
+      url: https://artifacthub.io/packages/helm/anychart/anychart

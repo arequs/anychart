@@ -1,0 +1,135 @@
+{{- if .Values.statefulset.enabled }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    {{- if .Values.statefulset.labels }}
+    {{toYaml .Values.statefulset.labels | nindent 4 }}
+    {{- end }}
+spec:
+  serviceName: {{ default $.Release.Name .Values.statefulset.serviceName }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: anychart
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+{{- if not (and .Values.autoscaler.enabled (eq .Values.autoscaler.targetKind "StatefulSet")) }}
+  replicas: {{ .Values.statefulset.replicas }}
+{{- end }}
+  {{- if .Values.statefulset.podManagementPolicy }}
+  podManagementPolicy: {{ .Values.statefulset.podManagementPolicy }}
+  {{- end }}
+  {{- if .Values.statefulset.updateStrategy }}
+  updateStrategy:
+  {{toYaml .Values.statefulset.updateStrategy | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: anychart
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        {{- if .Values.statefulset.labels }}
+        {{toYaml .Values.statefulset.labels | nindent 8 }}
+        {{- end }}
+      {{- with .Values.statefulset.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.statefulset.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.statefulset.runtimeClassName }}
+      runtimeClassName: {{ .Values.statefulset.runtimeClassName }}
+      {{- end }}
+      {{- if .Values.statefulset.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml .Values.statefulset.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      {{- if .Values.statefulset.nodeSelector }}
+      nodeSelector:
+      {{- toYaml .Values.statefulset.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .Values.statefulset.hostIPC }}
+      hostIPC: {{ .Values.statefulset.hostIPC }}
+      {{- end }}
+      {{- if .Values.statefulset.affinity }}
+      affinity:
+      {{ toYaml .Values.statefulset.affinity | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.priorityClass.name .Values.priorityClass.enabled }}
+      priorityClassName: {{default $.Release.Name .Values.priorityClass.name }}
+      {{- end }}
+      {{- if or .Values.serviceAccount.name .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ default $.Release.Name .Values.serviceAccount.name }}
+      {{- end }}
+      {{- if .Values.statefulset.initContainers }}
+      initContainers:
+      {{ toYaml .Values.statefulset.initContainers | nindent 8 }}
+      {{- end }}
+      {{- if .Values.statefulset.podSecurityContext }}
+      securityContext:
+      {{- toYaml .Values.statefulset.podSecurityContext | nindent 8 }}
+      {{- end }}
+      containers:
+        - image: {{ required "statefulset.image is required when enabled" .Values.statefulset.image | quote }}
+          name: {{ $.Release.Name }}
+          imagePullPolicy: {{ .Values.statefulset.imagePullPolicy }}
+          {{- if .Values.statefulset.securityContext }}
+          securityContext:
+          {{- toYaml .Values.statefulset.securityContext | nindent 12 }}
+          {{- end }}
+          {{- with .Values.statefulset.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.statefulset.startupProbe }}
+          startupProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.statefulset.command }}
+          command:
+          {{- toYaml .Values.statefulset.command | nindent 12 }}
+          {{- end }}
+          {{- if .Values.statefulset.args }}
+          args:
+          {{- toYaml .Values.statefulset.args | nindent 12 }}
+          {{- end }}
+          {{- if .Values.statefulset.livenessProbe }}
+          livenessProbe:
+          {{ toYaml .Values.statefulset.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.statefulset.readinessProbe }}
+          readinessProbe:
+          {{ toYaml .Values.statefulset.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- with .Values.statefulset.env }}
+          env:
+          {{ toYaml $.Values.statefulset.env | nindent 12 }}
+          {{- end }}
+          {{- with .Values.statefulset.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.statefulset.resources }}
+          resources:
+          {{ toYaml .Values.statefulset.resources | nindent 12 }}
+          {{- end }}
+          {{- if .Values.statefulset.volumeMounts }}
+          volumeMounts:
+          {{ toYaml .Values.statefulset.volumeMounts | nindent 12 }}
+          {{- end }}
+      {{- if .Values.statefulset.volumes }}
+      volumes:
+      {{ toYaml .Values.statefulset.volumes | nindent 8 }}
+      {{- end }}
+      restartPolicy: Always
+  {{- if .Values.statefulset.volumeClaimTemplates }}
+  volumeClaimTemplates:
+  {{ toYaml .Values.statefulset.volumeClaimTemplates | nindent 4 }}
+  {{- end }}
+{{- end }}

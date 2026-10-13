@@ -1,0 +1,28 @@
+{{- if .Values.service.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    {{- if .Values.service.labels }}
+    {{toYaml .Values.service.labels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.service.annotations }}
+  annotations:
+  {{toYaml .Values.service.annotations | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if hasKey .Values.service "clusterIP" }}
+  clusterIP: {{ .Values.service.clusterIP | quote }}
+  {{- end }}
+  ports:
+  {{toYaml (required "service.ports is required when enabled" .Values.service.ports) | nindent 4 }}
+  selector:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+  sessionAffinity: {{default "None" .Values.service.sessionAffinity }}
+  type: {{default "ClusterIP" .Values.service.type }}
+{{- end }}

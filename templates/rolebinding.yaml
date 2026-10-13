@@ -1,0 +1,36 @@
+{{- if .Values.roleBinding.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ default .Release.Name .Values.roleBinding.name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- with .Values.roleBinding.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.roleBinding.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: {{ .Values.roleBinding.roleRef.kind }}
+  {{- if eq .Values.roleBinding.roleRef.kind "ClusterRole" }}
+  name: {{ default (default (printf "%s-%s" .Release.Namespace .Release.Name) .Values.clusterRole.name) .Values.roleBinding.roleRef.name }}
+  {{- else }}
+  name: {{ default (default .Release.Name .Values.role.name) .Values.roleBinding.roleRef.name }}
+  {{- end }}
+subjects:
+  {{- if .Values.roleBinding.subjects }}
+  {{- toYaml .Values.roleBinding.subjects | nindent 2 }}
+  {{- else }}
+  {{- if not (or .Values.serviceAccount.enabled .Values.serviceAccount.name) }}
+  {{- fail "roleBinding requires explicit subjects or an enabled/named serviceAccount" }}
+  {{- end }}
+  - kind: ServiceAccount
+    name: {{ default .Release.Name .Values.serviceAccount.name }}
+    namespace: {{ .Release.Namespace }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if .Values.priorityClass.enabled }}
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: {{ default .Release.Name .Values.priorityClass.name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    {{- if .Values.priorityClass.labels }}
+    {{toYaml .Values.priorityClass.labels | nindent 4 }}
+    {{- end }}
+value: {{ .Values.priorityClass.value }}
+globalDefault: {{default "false" .Values.priorityClass.globalDefault }}
+{{- end }}

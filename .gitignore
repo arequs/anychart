@@ -1,0 +1,25 @@
+# Local project memory and agent state
+AGENTS.md
+AGENTS.local.md
+CLAUDE.md
+CLAUDE.local.md
+MEMORY.md
+memory.md
+.codex/
+.agents/
+.claude/
+.memory/
+memory/
+.serena/
+# Local configuration and generated files
+.env
+.env.*
+!.env.example
+values.local*.yaml
+*.tgz
+charts/
+dist/
+.DS_Store
+.idea/
+.vscode/
+*.swp

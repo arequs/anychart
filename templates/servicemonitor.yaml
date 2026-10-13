@@ -1,0 +1,46 @@
+{{- if .Values.serviceMonitor.enabled }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ default .Release.Name .Values.serviceMonitor.name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.serviceMonitor.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  selector:
+    {{- if .Values.serviceMonitor.selector }}
+    {{- toYaml .Values.serviceMonitor.selector | nindent 4 }}
+    {{- else }}
+    matchLabels:
+      app.kubernetes.io/component: anychart
+      app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- end }}
+  {{- with .Values.serviceMonitor.namespaceSelector }}
+  namespaceSelector:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  endpoints:
+    {{- toYaml .Values.serviceMonitor.endpoints | nindent 4 }}
+  {{- with .Values.serviceMonitor.jobLabel }}
+  jobLabel: {{ . | quote }}
+  {{- end }}
+  {{- with .Values.serviceMonitor.targetLabels }}
+  targetLabels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.serviceMonitor.podTargetLabels }}
+  podTargetLabels:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if hasKey .Values.serviceMonitor "sampleLimit" }}
+  sampleLimit: {{ .Values.serviceMonitor.sampleLimit }}
+  {{- end }}
+{{- end }}

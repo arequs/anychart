@@ -1,0 +1,5 @@
+charts:
+  - .
+check-version-increment: false
+validate-maintainers: false
+helm-lint-extra-args: --strict

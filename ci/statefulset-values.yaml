@@ -1,0 +1,13 @@
+statefulset:
+  enabled: true
+  image: nginx:1.28-alpine
+  ports:
+    - name: http
+      containerPort: 80
+service:
+  enabled: true
+  clusterIP: None
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

@@ -1,0 +1,22 @@
+{{- if .Values.autoscaler.enabled}}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    {{- if .Values.autoscaler.labels }}
+    {{toYaml .Values.autoscaler.labels | nindent 4 }}
+    {{- end }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ .Values.autoscaler.targetKind }}
+    name: {{ $.Release.Name }}
+  minReplicas: {{ .Values.autoscaler.minReplicas }}
+  maxReplicas: {{ .Values.autoscaler.maxReplicas }}
+  metrics:
+  {{ toYaml .Values.autoscaler.metrics | nindent 4 }}
+{{- end}}

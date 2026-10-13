@@ -1,0 +1,44 @@
+# Assumes backend Services and controllers exist; these resources can stand alone.
+serviceMonitor:
+  enabled: true
+  labels:
+    release: prometheus
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics
+  sampleLimit: 0
+middleware:
+  enabled: true
+  name: strip-api
+  spec:
+    stripPrefix:
+      prefixes: [/api]
+ingressroute:
+  enabled: true
+  entryPoints: [web]
+  routes:
+    - match: Host(`example.invalid`) && PathPrefix(`/api`)
+      kind: Rule
+      middlewares:
+        - name: strip-api
+      services:
+        - name: web
+          port: 80
+ingressrouteTCP:
+  enabled: true
+  entryPoints: [database]
+  routes:
+    - match: HostSNI(`database.example.invalid`)
+      services:
+        - name: database
+          port: 5432
+  tls:
+    passthrough: true
+ingressrouteUDP:
+  enabled: true
+  entryPoints: [dns]
+  routes:
+    - services:
+        - name: dns
+          port: 53

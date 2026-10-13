@@ -1,0 +1,12 @@
+deployment:
+  enabled: true
+  image: nginx:1.28-alpine
+autoscaler:
+  enabled: true
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80

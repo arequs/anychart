@@ -1,0 +1,50 @@
+deployment:
+  enabled: true
+  image: nginx:1.28-alpine
+  replicas: 0
+  labels:
+    team: example
+  ports:
+    - name: http
+      containerPort: 80
+service:
+  enabled: true
+  labels:
+    owner: example
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+serviceAccount:
+  enabled: true
+  name: custom-account
+  automountServiceAccountToken: false
+priorityClass:
+  enabled: true
+  name: custom-priority
+  value: 0
+persistence:
+  enabled: true
+  storageClass: ""
+secrets:
+  enabled: true
+  list:
+    - name: example-secret
+      stringData:
+        example: test-only
+    - name: another-secret
+      data:
+        example: dGVzdA==
+ingress:
+  enabled: true
+  rules:
+    - host: example.invalid
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: smoke
+                port:
+                  number: 80

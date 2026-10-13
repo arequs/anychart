@@ -1,0 +1,22 @@
+{{- if .Values.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ $.Release.Name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    {{- if .Values.persistence.labels }}
+    {{toYaml .Values.persistence.labels | nindent 4 }}
+    {{- end }}
+spec:
+  accessModes:
+    - {{default "ReadWriteOnce" .Values.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size }}
+  {{- if hasKey .Values.persistence "storageClass" }}
+  storageClassName: {{ .Values.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}

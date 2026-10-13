@@ -1,0 +1,226 @@
+# All resources are opt-in. See examples/ for installable configurations.
+service:
+  enabled: false
+  labels: {}
+  annotations: {}
+  type: ClusterIP
+  sessionAffinity: None
+  ports: []
+  # clusterIP: None # Headless Service for a StatefulSet.
+
+persistence:
+  enabled: false
+  labels: {}
+  accessMode: ReadWriteOnce
+  size: 1Gi
+  # storageClass: "" # Explicitly disable dynamic provisioning; omit for cluster default.
+
+priorityClass:
+  enabled: false
+  name: ""
+  labels: {}
+  value: 100
+  globalDefault: false
+
+serviceAccount:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  automountServiceAccountToken: false
+
+deployment:
+  enabled: false
+  labels: {}
+  podAnnotations: {}
+  image: ""
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  ports: []
+  command: []
+  args: []
+  env: []
+  envFrom: []
+  resources: {}
+  # Optional Kubernetes fields: strategy (Deployment), updateStrategy,
+  # podManagementPolicy, serviceName, volumeClaimTemplates (StatefulSet),
+  # runtimeClassName, imagePullSecrets, nodeSelector, tolerations, affinity,
+  # hostIPC, initContainers, podSecurityContext, securityContext, startupProbe,
+  # livenessProbe, readinessProbe, volumeMounts, volumes.
+
+statefulset:
+  enabled: false
+  labels: {}
+  podAnnotations: {}
+  image: ""
+  imagePullPolicy: IfNotPresent
+  replicas: 1
+  ports: []
+  command: []
+  args: []
+  env: []
+  envFrom: []
+  resources: {}
+  # Optional Kubernetes fields: strategy (Deployment), updateStrategy,
+  # podManagementPolicy, serviceName, volumeClaimTemplates (StatefulSet),
+  # runtimeClassName, imagePullSecrets, nodeSelector, tolerations, affinity,
+  # hostIPC, initContainers, podSecurityContext, securityContext, startupProbe,
+  # livenessProbe, readinessProbe, volumeMounts, volumes.
+
+cronjob:
+  enabled: false
+  labels: {}
+  annotations: {}
+  podAnnotations: {}
+  schedule: ""
+  # timeZone: Etc/UTC # Requires Kubernetes 1.27+.
+  concurrencyPolicy: Forbid
+  suspend: false
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  backoffLimit: 6
+  restartPolicy: OnFailure
+  image: ""
+  imagePullPolicy: IfNotPresent
+  command: []
+  args: []
+  ports: []
+  env: []
+  envFrom: []
+  resources: {}
+  # Optional: startingDeadlineSeconds, activeDeadlineSeconds,
+  # ttlSecondsAfterFinished, and the shared pod/container fields above.
+
+autoscaler:
+  enabled: false
+  labels: {}
+  targetKind: Deployment  # Deployment or StatefulSet; enable the matching workload.
+  minReplicas: 1
+  maxReplicas: 3
+  metrics: []
+
+secrets:
+  enabled: false
+  list: []  # Each entry: name, type, labels, annotations, data and/or stringData.
+
+secretProviderClass:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  provider: ""
+  secretObjects: []
+  parameters: {}
+
+ingress:
+  enabled: false
+  labels: {}
+  annotations: {}
+  ingressClassName: ""
+  rules: []
+  tls: []
+
+ingressroute:
+  enabled: false
+  labels: {}
+  annotations: {}
+  entryPoints: []
+  routes: []
+  tls: {}
+
+# Run one pod per eligible node; mutually exclusive with other workloads.
+daemonset:
+  enabled: false
+  labels: {}
+  podAnnotations: {}
+  image: ""
+  imagePullPolicy: IfNotPresent
+  minReadySeconds: 0
+  revisionHistoryLimit: 10
+  updateStrategy: {}
+  ports: []
+  command: []
+  args: []
+  env: []
+  envFrom: []
+  resources: {}
+  # Supports the shared pod/container fields described above.
+
+configMap:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  immutable: false
+  data: {}  # String values only.
+  binaryData: {}  # Base64-encoded strings.
+
+serviceMonitor:
+  enabled: false
+  name: ""
+  labels: {}  # Must match the Prometheus serviceMonitorSelector.
+  annotations: {}
+  selector: {}  # Defaults to this release's Service labels.
+  namespaceSelector: {}  # Omit to monitor Services in the release namespace.
+  endpoints: []  # Required; port refers to the Service port name.
+  jobLabel: ""
+  targetLabels: []
+  podTargetLabels: []
+  # sampleLimit: 0
+
+ingressrouteTCP:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  entryPoints: []
+  routes: []
+  tls: {}
+
+ingressrouteUDP:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  entryPoints: []
+  routes: []  # UDP routes contain services, without HTTP/TCP match rules or TLS.
+
+middleware:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  spec: {}  # Traefik HTTP Middleware spec, e.g. stripPrefix: {prefixes: [/api]}.
+
+role:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  rules: []
+
+roleBinding:
+  enabled: false
+  name: ""
+  labels: {}
+  annotations: {}
+  roleRef:
+    kind: Role  # Role or ClusterRole.
+    name: ""  # Defaults to the corresponding role's name.
+  subjects: []  # Defaults to an enabled/named serviceAccount in this namespace.
+
+clusterRole:
+  enabled: false
+  name: ""  # Defaults to <namespace>-<release> to avoid cross-namespace collisions.
+  labels: {}
+  annotations: {}
+  rules: []
+
+clusterRoleBinding:
+  enabled: false
+  name: ""  # Defaults to <namespace>-<release>.
+  labels: {}
+  annotations: {}
+  roleRef:
+    name: ""  # Defaults to the clusterRole name; kind is always ClusterRole.
+  subjects: []  # Defaults to an enabled/named serviceAccount in this namespace.

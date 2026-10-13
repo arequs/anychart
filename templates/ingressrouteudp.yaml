@@ -1,0 +1,24 @@
+{{- if .Values.ingressrouteUDP.enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteUDP
+metadata:
+  name: {{ default .Release.Name .Values.ingressrouteUDP.name }}
+  labels:
+    app.kubernetes.io/component: anychart
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    {{- with .Values.ingressrouteUDP.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with .Values.ingressrouteUDP.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- with .Values.ingressrouteUDP.entryPoints }}
+  entryPoints:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  routes:
+    {{- toYaml .Values.ingressrouteUDP.routes | nindent 4 }}
+{{- end }}

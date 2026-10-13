@@ -1,0 +1,13 @@
+cronjob:
+  enabled: true
+  image: busybox:1.37
+  schedule: "*/15 * * * *"
+  command: ["/bin/sh", "-c"]
+  args: ["date; echo Scheduled task completed"]
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  backoffLimit: 2
+  activeDeadlineSeconds: 120
+  ttlSecondsAfterFinished: 3600
+serviceAccount:
+  enabled: true

@@ -1,0 +1,33 @@
+daemonset:
+  enabled: true
+  image: busybox:1.37
+  command: ["/bin/sh", "-c"]
+  args: ["while true; do echo node agent running; sleep 60; done"]
+  envFrom:
+    - configMapRef:
+        name: agent-config
+configMap:
+  enabled: true
+  name: agent-config
+  data:
+    LOG_LEVEL: info
+serviceAccount:
+  enabled: true
+  name: node-agent
+  automountServiceAccountToken: true
+role:
+  enabled: true
+  rules:
+    - apiGroups: [""]
+      resources: [configmaps]
+      verbs: [get, list, watch]
+roleBinding:
+  enabled: true
+clusterRole:
+  enabled: true
+  rules:
+    - apiGroups: [""]
+      resources: [nodes]
+      verbs: [get, list, watch]
+clusterRoleBinding:
+  enabled: true
