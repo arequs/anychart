@@ -2,7 +2,7 @@ apiVersion: v2
 name: anychart
 description: A configurable Helm chart for application workloads and supporting Kubernetes resources.
 type: application
-version: 1.0.0
+version: 1.0.1
 kubeVersion: ">=1.25.0-0"
 home: https://github.com/arequs/anychart
 sources:

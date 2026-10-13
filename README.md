@@ -1,12 +1,11 @@
 # Anychart
 
+[![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/anychart)](https://artifacthub.io/packages/search?repo=anychart)
+
 Anychart is a general-purpose Helm chart for deploying a containerized application
 as a Deployment, StatefulSet, DaemonSet, or scheduled CronJob, together with optional
-networking, storage, secrets, service accounts, and autoscaling resources.
+networking, storage, ConfigMaps, secrets, RBAC, monitoring, and autoscaling resources.
 Templates are self-contained and do not use named Helm helpers.
-
-[Source repository](https://github.com/arequs/anychart) ·
-[Artifact Hub](https://artifacthub.io/packages/helm/anychart/anychart)
 
 ## Requirements
 
@@ -20,21 +19,11 @@ Templates are self-contained and do not use named Helm helpers.
 
 The chart does not install controllers or CRDs.
 
-## Install
-
-All resources are disabled by default. Choose an example and supply your image:
-
-```sh
-git clone https://github.com/arequs/anychart.git
-cd anychart
-helm upgrade --install my-app . --namespace my-app --create-namespace \
-  --values examples/deployment.yaml --set deployment.image=nginx:1.28-alpine
-```
-
 Use `examples/statefulset.yaml` for a StatefulSet with a headless Service, or
-`examples/cronjob.yaml` for a task every 15 minutes. The Artifact Hub link above is
-the intended catalog listing; once published, use its installation instructions
-for the hosted chart. Artifact Hub is a catalog, not a Helm repository endpoint.
+`examples/cronjob.yaml` for a task every 15 minutes. See the
+[Artifact Hub listing](https://artifacthub.io/packages/helm/anychart/anychart) for
+hosted chart installation details. Artifact Hub is a catalog, not a Helm
+repository endpoint.
 
 ## Configuration
 
@@ -176,37 +165,3 @@ history limits, and finished-job TTL. Zero retry/history limits are preserved.
 Release names must be at most 52 characters. Without `timeZone`, scheduling uses
 the controller's timezone. Tasks should tolerate retries and duplicate execution.
 See the [Kubernetes CronJob documentation](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/).
-
-## Development and checks
-
-```sh
-helm lint . --strict
-helm lint . --strict -f ci/resources-values.yaml
-helm template smoke . -f examples/cronjob.yaml
-```
-
-GitHub Actions uses the standard setup-helm, chart-testing, and kind actions.
-`ct lint --config ct.yaml` checks chart metadata, YAML, schema, and all
-`ci/*-values.yaml` configurations. Separate matrix jobs submit rendered built-in
-resources to an ephemeral Kubernetes API with server-side dry-run. Custom
-resources are render/lint checked only; their controllers are not installed.
-The workflow does not publish charts or upload build artifacts.
-
-Project memory (`AGENTS.md`, `CLAUDE.md`, `MEMORY.md`, agent directories, and
-`memory/`) and local values are ignored by Git and excluded from Helm packages.
-Never put real credentials in committed values; use existing Secrets or a secret
-provider. The files under `ci/` contain dummy test data only.
-
-## Publication
-
-The chart metadata points to this public source repository and the intended
-Artifact Hub listing. Publishing a Helm repository or OCI chart, registering it
-with Artifact Hub, and changing GitHub repository visibility are separate
-maintainer operations. This repository contains checks only, with no release
-pipeline. Select and add a license before distributing the chart under open
-source terms; no license has been assumed on the owner's behalf.
-
-This public version replaces the internal `common-chart` name and component
-label with `anychart`. Existing installations need a migration plan or a fresh
-release because workload selectors are immutable. Container ports now use
-`deployment.ports` or `statefulset.ports`, independently of `service.ports`.
